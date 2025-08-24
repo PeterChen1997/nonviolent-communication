@@ -5,9 +5,27 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { initDatabase } from "~/lib/db.server";
 
 import "./tailwind.css";
+
+// 确保在服务器启动时初始化数据库
+let dbInitialized = false;
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  if (!dbInitialized) {
+    try {
+      await initDatabase();
+      dbInitialized = true;
+      console.log("数据库初始化成功");
+    } catch (error) {
+      console.error("数据库初始化失败:", error);
+    }
+  }
+  return json({});
+}
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

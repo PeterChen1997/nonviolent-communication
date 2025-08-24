@@ -1,56 +1,81 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, Link, useSearchParams } from "@remix-run/react";
-import { getNVCSession } from "~/lib/db.server";
+import {
+  getNVCSession,
+  getQASessionsBySessionId,
+  type QASession,
+} from "~/lib/db.server";
+import QASection from "~/components/QASection";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "NVC 分析结果" },
-    { name: "description", content: "您的非暴力沟通练习分析结果" },
+    { title: "倾听小猫的建议" },
+    { name: "description", content: "小猫为你准备的暖心表达方式" },
   ];
 };
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  const sessionId = parseInt(params.id!);
-  if (isNaN(sessionId)) {
-    throw new Response("无效的会话ID", { status: 400 });
+  const { id } = params;
+  if (!id) {
+    throw new Response("会话ID是必需的", { status: 400 });
   }
 
-  const session = await getNVCSession(sessionId);
+  // 验证UUID格式
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) {
+    throw new Response("无效的会话ID格式", { status: 400 });
+  }
+
+  const session = await getNVCSession(id);
   if (!session) {
     throw new Response("未找到会话", { status: 404 });
   }
 
-  return json({ session });
+  // 获取问答记录
+  const qaList = await getQASessionsBySessionId(id);
+
+  return json({ session, qaList });
+}
+
+// 处理文本分行显示的工具函数
+function formatText(text: string) {
+  return text.split("\n").map((line, index) => (
+    <span key={index}>
+      {line}
+      {index < text.split("\n").length - 1 && <br />}
+    </span>
+  ));
 }
 
 export default function ResultPage() {
-  const { session } = useLoaderData<typeof loader>();
+  const { session, qaList } = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
   const fromQuery = searchParams.get("from") === "query";
 
   const steps = [
     {
       key: "observation",
-      title: "观察",
+      title: "看看发生了什么",
       color: "bg-green-500",
       content: session.observation,
     },
     {
       key: "feeling",
-      title: "感受",
+      title: "说说心里感受",
       color: "bg-orange-500",
       content: session.feeling,
     },
     {
       key: "need",
-      title: "需要",
+      title: "找找内心需要",
       color: "bg-purple-500",
       content: session.need,
     },
     {
       key: "request",
-      title: "请求",
+      title: "提出温暖请求",
       color: "bg-blue-500",
       content: session.request,
     },
@@ -59,51 +84,60 @@ export default function ResultPage() {
   const aiAnalysis = session.ai_feedback;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* 顶部标题 */}
-      <div className="bg-white shadow-sm p-4 text-center">
-        <h1 className="text-xl font-bold text-gray-800">NVC 转换结果</h1>
-        <p className="text-sm text-gray-600 mt-1">
-          您的表达已转换为非暴力沟通方式
-        </p>
+      <div className="px-6 pt-12 pb-8 text-center">
+        <div className="animate-fade-in">
+          <div className="text-6xl mb-4">🐱</div>
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 tracking-tight">
+            小猫为你准备好了
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-md mx-auto leading-relaxed">
+            一份温暖的表达方式 💕
+          </p>
+        </div>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="px-6 max-w-2xl mx-auto space-y-6">
         {/* 原始表达 */}
-        <div className="bg-white rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">
-            💬 您的原始表达
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-slide-up">
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
+            💬 <span className="ml-2">你刚才说的话</span>
           </h2>
-          <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-gray-300">
-            <p className="text-gray-700 leading-relaxed">
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-4 md:p-5 border-l-4 border-blue-400">
+            <p className="text-base md:text-lg text-gray-800 leading-relaxed font-medium">
               "{session.original_text}"
             </p>
           </div>
         </div>
 
         {/* NVC 转换结果 */}
-        <div className="bg-white rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            🔄 NVC 转换结果
+        <div
+          className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-slide-up"
+          style={{ animationDelay: "0.1s" }}
+        >
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            🌸 <span className="ml-2">小猫建议这样说</span>
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {steps.map((step, index) => (
-              <div key={step.key} className="border rounded-lg p-4">
-                <div className="flex items-center mb-2">
-                  <div
-                    className={`w-8 h-8 rounded-full ${step.color} text-white text-sm font-bold flex items-center justify-center mr-3`}
-                  >
-                    {index + 1}
+              <div
+                key={step.key}
+                className="bg-gradient-to-r from-white to-gray-50 rounded-2xl p-4 md:p-6 shadow-md border border-gray-100 animate-fade-in transform hover:scale-[1.02] transition-all duration-300"
+                style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+              >
+                <div className="mb-4">
+                  <div className="mb-4">
+                    <div
+                      className={`inline-block px-4 py-2 rounded-2xl text-white text-base md:text-lg font-bold ${step.color} shadow-md`}
+                    >
+                      {step.title}
+                    </div>
                   </div>
-                  <div
-                    className={`inline-block px-3 py-1 rounded-full text-white text-sm font-medium ${step.color}`}
-                  >
-                    {step.title}
+                  <div className="text-base md:text-lg text-gray-800 leading-relaxed font-medium">
+                    {formatText(step.content)}
                   </div>
                 </div>
-                <p className="text-gray-700 leading-relaxed ml-11">
-                  {step.content}
-                </p>
               </div>
             ))}
           </div>
@@ -113,33 +147,85 @@ export default function ResultPage() {
         {aiAnalysis && (
           <>
             {/* 总体评分 */}
-            <div className="bg-white rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                🏆 总体评分
+            <div
+              className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-lg border border-white/20 animate-slide-up"
+              style={{ animationDelay: "0.6s" }}
+            >
+              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                🌟 <span className="ml-2">小猫给你打分</span>
               </h3>
-              <div className="flex items-center space-x-4">
-                <div className="flex-1 bg-gray-200 rounded-full h-3">
-                  <div
-                    className="bg-green-500 h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${(aiAnalysis.score / 10) * 100}%` }}
-                  ></div>
+              <div className="text-center mb-6">
+                <div className="relative w-32 h-32 mx-auto mb-4">
+                  <svg
+                    className="w-32 h-32 transform -rotate-90"
+                    viewBox="0 0 120 120"
+                  >
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      stroke="#e5e7eb"
+                      strokeWidth="8"
+                      fill="none"
+                    />
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      stroke="url(#gradient)"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray={`${(aiAnalysis.score / 10) * 314} 314`}
+                      className="transition-all duration-1000 animate-pulse"
+                    />
+                    <defs>
+                      <linearGradient
+                        id="gradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="0%"
+                      >
+                        <stop offset="0%" stopColor="#10b981" />
+                        <stop offset="100%" stopColor="#34d399" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-3xl md:text-4xl font-bold text-green-600">
+                      {aiAnalysis.score}
+                    </span>
+                    <span className="text-lg md:text-xl text-gray-500 ml-1">
+                      /10
+                    </span>
+                  </div>
                 </div>
-                <span className="text-2xl font-bold text-green-600">
-                  {aiAnalysis.score}/10
-                </span>
+                <div className="text-lg text-green-600 font-semibold">
+                  {aiAnalysis.score >= 8
+                    ? "优秀表达 🎉"
+                    : aiAnalysis.score >= 6
+                    ? "良好进步 👍"
+                    : "继续加油 💪"}
+                </div>
               </div>
-              <p className="text-gray-600 text-sm mt-2">
-                {aiAnalysis.overall_feedback}
-              </p>
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6">
+                <div className="text-base md:text-lg text-gray-800 leading-relaxed font-medium">
+                  {formatText(aiAnalysis.overall_feedback)}
+                </div>
+              </div>
             </div>
 
             {/* 改进建议 */}
-            <div className="bg-white rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                💡 AI 改进建议
+            <div
+              className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-lg border border-white/20 animate-slide-up"
+              style={{ animationDelay: "0.8s" }}
+            >
+              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                💡 <span className="ml-2">小猫的贴心建议</span>
               </h3>
-              <div className="space-y-4">
-                {steps.map((step) => {
+              <div className="space-y-6">
+                {steps.map((step, stepIndex) => {
                   const improvements =
                     aiAnalysis.improvements[
                       step.key as keyof typeof aiAnalysis.improvements
@@ -147,24 +233,36 @@ export default function ResultPage() {
                   if (!improvements || improvements.length === 0) return null;
 
                   return (
-                    <div key={step.key} className="border rounded-lg p-3">
-                      <div
-                        className={`inline-block px-2 py-1 rounded text-white text-xs font-medium ${step.color} mb-2`}
-                      >
-                        {step.title}
+                    <div
+                      key={step.key}
+                      className="bg-gradient-to-r from-white to-gray-50 rounded-2xl p-6 border border-gray-100 shadow-md animate-fade-in transform hover:scale-[1.02] transition-all duration-300"
+                      style={{ animationDelay: `${1.0 + stepIndex * 0.1}s` }}
+                    >
+                      <div className="mb-4">
+                        <div
+                          className={`inline-block px-4 py-2 rounded-2xl text-white text-base md:text-lg font-bold ${step.color} shadow-md`}
+                        >
+                          {step.title}小贴士
+                        </div>
                       </div>
-                      <ul className="space-y-1">
-                        {improvements.map((suggestion, index) => (
-                          <li
-                            key={index}
-                            className="text-sm text-gray-700 flex items-start"
-                          >
-                            <span className="text-orange-500 mr-2 flex-shrink-0">
-                              •
-                            </span>
-                            <span>{suggestion}</span>
-                          </li>
-                        ))}
+                      <ul className="space-y-3">
+                        {improvements.map(
+                          (suggestion: string, index: number) => (
+                            <li
+                              key={index}
+                              className="text-base md:text-lg text-gray-800 flex items-start leading-relaxed"
+                            >
+                              <div className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                                <span className="text-pink-600 text-sm">
+                                  💝
+                                </span>
+                              </div>
+                              <div className="font-medium">
+                                {formatText(suggestion)}
+                              </div>
+                            </li>
+                          )
+                        )}
                       </ul>
                     </div>
                   );
@@ -175,20 +273,23 @@ export default function ResultPage() {
         )}
 
         {/* 操作按钮 */}
-        <div className="flex flex-col space-y-3">
+        <div
+          className="flex flex-col space-y-4 animate-slide-up"
+          style={{ animationDelay: "1.5s" }}
+        >
           <Link
             to="/"
-            className="bg-blue-500 text-white text-center py-3 px-6 rounded-lg font-medium hover:bg-blue-600 transition-colors"
+            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-center py-4 px-8 rounded-2xl text-xl font-bold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl shadow-lg"
           >
-            开始新的练习
+            🐱 再和小猫聊聊
           </Link>
 
           {fromQuery && (
             <Link
               to="/"
-              className="bg-gray-500 text-white text-center py-3 px-6 rounded-lg font-medium hover:bg-gray-600 transition-colors"
+              className="bg-gradient-to-r from-gray-400 to-gray-600 text-white text-center py-4 px-8 rounded-2xl text-lg font-semibold hover:from-gray-500 hover:to-gray-700 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg shadow-md"
             >
-              返回首页
+              🏠 返回首页
             </Link>
           )}
 
@@ -205,17 +306,58 @@ export default function ResultPage() {
                 alert("链接已复制到剪贴板");
               }
             }}
-            className="bg-green-500 text-white text-center py-3 px-6 rounded-lg font-medium hover:bg-green-600 transition-colors"
+            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center py-4 px-8 rounded-2xl text-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg shadow-md"
           >
-            分享结果
+            📤 分享结果
           </button>
         </div>
 
+        {/* 问答区域 */}
+        <QASection
+          sessionId={session.id!}
+          existingQAs={qaList.map((qa) => ({
+            ...qa,
+            created_at: qa.created_at ? new Date(qa.created_at) : undefined,
+          }))}
+        />
+
         {/* 时间信息 */}
-        <div className="text-center text-xs text-gray-500">
-          完成时间: {new Date(session.created_at!).toLocaleString("zh-CN")}
+        <div
+          className="text-center bg-white/50 backdrop-blur-xl rounded-2xl p-4 animate-fade-in"
+          style={{ animationDelay: "1.8s" }}
+        >
+          <p className="text-gray-600 text-lg">
+            完成时间: {new Date(session.created_at!).toLocaleString("zh-CN")}
+          </p>
         </div>
+
+        {/* 底部留白 */}
+        <div className="h-8"></div>
       </div>
+
+      {/* 自定义动画样式 */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+          @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes slide-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .animate-fade-in {
+            animation: fade-in 0.6s ease-out forwards;
+            opacity: 0;
+          }
+          .animate-slide-up {
+            animation: slide-up 0.6s ease-out forwards;
+            opacity: 0;
+          }
+        `,
+        }}
+      />
     </div>
   );
 }

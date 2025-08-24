@@ -4,10 +4,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { initDatabase } from "~/lib/db.server";
+import Header from "~/components/Header";
 
 import "./tailwind.css";
 
@@ -44,6 +46,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script
+          defer
+          src="https://a.hweb.peterchen97.cn/script.js"
+          data-website-id="f6af9655-6fa7-486a-ab80-8689989fe76e"
+        ></script>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
@@ -59,5 +66,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      <Header />
+      <Outlet />
+    </>
+  );
 }

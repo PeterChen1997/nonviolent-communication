@@ -1,5 +1,6 @@
 import "dotenv/config";
 import pg from "pg";
+import { v4 as uuidv4 } from "uuid";
 
 const { Pool } = pg;
 
@@ -29,10 +30,13 @@ export { pool };
 // 数据库初始化函数
 export async function initDatabase() {
   try {
+    // 创建UUID扩展（如果不存在）
+    await pool.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
+
     // 创建 NVC 复盘记录表
     await pool.query(`
       CREATE TABLE IF NOT EXISTS nvc_sessions (
-        id SERIAL PRIMARY KEY,
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         original_text TEXT NOT NULL,
         observation TEXT NOT NULL,
         feeling TEXT NOT NULL,
@@ -41,6 +45,18 @@ export async function initDatabase() {
         ai_feedback JSONB,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // 创建问答记录表
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS qa_sessions (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        session_id UUID NOT NULL REFERENCES nvc_sessions(id) ON DELETE CASCADE,
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        question_count INTEGER NOT NULL DEFAULT 1,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
@@ -72,7 +88,7 @@ export async function initDatabase() {
 
 // NVC 会话数据类型
 export interface NVCSession {
-  id?: number;
+  id?: string;
   original_text: string;
   observation: string;
   feeling: string;
@@ -81,6 +97,16 @@ export interface NVCSession {
   ai_feedback?: any;
   created_at?: Date;
   updated_at?: Date;
+}
+
+// 问答会话数据类型
+export interface QASession {
+  id?: string;
+  session_id: string;
+  question: string;
+  answer: string;
+  question_count: number;
+  created_at?: Date;
 }
 
 // 创建新的 NVC 会话
@@ -104,7 +130,7 @@ export async function createNVCSession(
 }
 
 // 根据 ID 获取 NVC 会话
-export async function getNVCSession(id: number) {
+export async function getNVCSession(id: string) {
   const result = await pool.query("SELECT * FROM nvc_sessions WHERE id = $1", [
     id,
   ]);
@@ -113,7 +139,7 @@ export async function getNVCSession(id: number) {
 
 // 更新 NVC 会话
 export async function updateNVCSession(
-  id: number,
+  id: string,
   updates: Partial<NVCSession>
 ) {
   const fields = Object.keys(updates).filter((key) => key !== "id");
@@ -135,4 +161,35 @@ export async function getAllNVCSessions() {
     "SELECT * FROM nvc_sessions ORDER BY created_at DESC"
   );
   return result.rows as NVCSession[];
+}
+
+// 创建新的问答记录
+export async function createQASession(
+  qa: Omit<QASession, "id" | "created_at">
+) {
+  const result = await pool.query(
+    `INSERT INTO qa_sessions (session_id, question, answer, question_count)
+     VALUES ($1, $2, $3, $4)
+     RETURNING *`,
+    [qa.session_id, qa.question, qa.answer, qa.question_count]
+  );
+  return result.rows[0] as QASession;
+}
+
+// 获取会话的问答记录
+export async function getQASessionsBySessionId(sessionId: string) {
+  const result = await pool.query(
+    "SELECT * FROM qa_sessions WHERE session_id = $1 ORDER BY created_at ASC",
+    [sessionId]
+  );
+  return result.rows as QASession[];
+}
+
+// 获取会话的问答数量
+export async function getQACountBySessionId(sessionId: string) {
+  const result = await pool.query(
+    "SELECT COUNT(*) as count FROM qa_sessions WHERE session_id = $1",
+    [sessionId]
+  );
+  return parseInt(result.rows[0].count);
 }

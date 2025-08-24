@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { useLoaderData, useFetcher } from "@remix-run/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createNVCSession } from "~/lib/db.server";
 import { decomposeToNVC } from "~/lib/openai.server";
 
@@ -53,6 +53,16 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function ProcessingPage() {
   const { originalText } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
+  const [progress, setProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const steps = [
+    "小猫正在仔细听你说话...",
+    "小猫在理解你的情绪...",
+    "小猫在想温暖的表达方式...",
+    "小猫在完善建议...",
+    "搞定啦！",
+  ];
 
   useEffect(() => {
     // 页面加载后立即提交处理请求
@@ -68,29 +78,85 @@ export default function ProcessingPage() {
     }
   }, [fetcher.data]);
 
+  // 假进度条逻辑
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev < 90) {
+          const increment = Math.random() * 15 + 5; // 随机增加5-20%
+          return Math.min(prev + increment, 90);
+        }
+        return prev;
+      });
+    }, 800);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // 步骤切换逻辑
+  useEffect(() => {
+    const stepTimer = setInterval(() => {
+      setCurrentStep((prev) => {
+        if (prev < steps.length - 2) {
+          return prev + 1;
+        }
+        return prev;
+      });
+    }, 2000);
+
+    return () => clearInterval(stepTimer);
+  }, []);
+
+  // 当API完成时，设置进度为100%
+  useEffect(() => {
+    if (fetcher.data?.sessionId) {
+      setProgress(100);
+      setCurrentStep(steps.length - 1);
+    }
+  }, [fetcher.data]);
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full text-center">
-        <div className="mb-6">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto"></div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full text-center shadow-lg border border-white/20">
+        {/* 小猫动画 */}
+        <div className="mb-8">
+          <div className="text-8xl mb-4 animate-bounce">🐈</div>
         </div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          AI 正在转换中...
+
+        {/* 标题 */}
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+          小猫正在思考中
         </h2>
-        <p className="text-gray-600 mb-4">
-          我们正在使用专业的非暴力沟通模型分析您的表达，
-          将其转换为温和而有效的四步骤表达方式。
+
+        {/* 描述 */}
+        <p className="text-base md:text-lg text-gray-600 mb-6 leading-relaxed">
+          我正在用心分析你的话， 马上就能给你一个温暖的表达方式啦~
         </p>
-        <div className="text-sm text-gray-500">这通常需要 10-30 秒</div>
 
-        {fetcher.state === "idle" && fetcher.data?.sessionId && (
-          <div className="mt-4 text-green-600 text-sm">
-            ✅ 转换完成，正在跳转...
+        {/* 进度条 */}
+        <div className="mb-6">
+          <div className="mb-4">
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div
+                className="bg-gradient-to-r from-pink-400 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
           </div>
-        )}
 
-        {fetcher.state === "submitting" && (
-          <div className="mt-4 text-blue-600 text-sm">🔄 正在处理中...</div>
+          {/* 当前步骤显示 */}
+          <div className="text-purple-600 text-base md:text-lg font-medium mb-4">
+            {steps[currentStep]}
+          </div>
+
+          <div className="text-gray-500 text-sm">预计需要 10-30 秒</div>
+        </div>
+
+        {/* 状态显示 */}
+        {fetcher.state === "idle" && fetcher.data?.sessionId && (
+          <div className="text-green-600 text-base font-medium">
+            🎉 完成啦！正在跳转...
+          </div>
         )}
       </div>
     </div>

@@ -19,6 +19,7 @@ export interface NVCDecomposition {
   };
   overall_feedback: string;
   score: number; // 1-10 分评分
+  standard_response: string; // 标准答案
 }
 
 export async function decomposeToNVC(
@@ -46,7 +47,8 @@ export async function decomposeToNVC(
     "request": ["3-4个请求优化技巧：怎么让你的期待更清楚、更容易实现"]
   },
   "overall_feedback": "至少150字的温暖反馈，包括：1）夸夸你敢于表达的勇气 2）分析这种沟通情况很常见，你不是一个人 3）举些类似的例子（工作、家庭、朋友间的相似情况）4）解释为什么温暖沟通这么重要 5）给你一些鼓励和继续练习的建议",
-  "score": 8 (根据提问内容打分，满分10分)
+  "score": 8 (根据提问内容打分，满分10分),
+  "standard_response": "这是一句综合了观察、感受、需要、请求四个部分的完整标准答案，用最温暖、最直接的方式表达你想说的话，别人听了会更容易理解和接受"
 }
 
 我的分析要点：
@@ -54,6 +56,7 @@ export async function decomposeToNVC(
 2. 感受：温柔地理解你的情绪，帮你说出那些藏在愤怒背后的真实感受
 3. 需要：像知心朋友一样，帮你找到内心真正渴望的东西，比如理解、尊重、关爱
 4. 请求：用最暖心的方式，建议你怎么跟对方沟通，让大家都舒服
+5. 标准答案：把四个部分自然地串联成一句完整的话，就像你直接跟对方说话一样，要温暖、诚恳、容易理解。这应该是你可以直接使用的完美表达。
 
 评分说明（1-10分）：
 - 有多准确地理解你的意思（30%）
@@ -112,7 +115,8 @@ export async function decomposeToNVC(
         !parsed.observation ||
         !parsed.feeling ||
         !parsed.need ||
-        !parsed.request
+        !parsed.request ||
+        !parsed.standard_response
       ) {
         throw new Error("JSON 缺少必要字段");
       }

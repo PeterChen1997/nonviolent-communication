@@ -61,27 +61,46 @@ export function Layout({ children }: { children: React.ReactNode }) {
           data-website-id="f6af9655-6fa7-486a-ab80-8689989fe76e"
         ></script>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-        
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+        />
+
         {/* PWA Meta Tags */}
         <meta name="application-name" content="倾听小猫" />
-        <meta name="description" content="帮你把不舒服的话变成暖心的表达，温暖有效的非暴力沟通助手" />
-        <meta name="theme-color" content="#3b82f6" />
+        <meta
+          name="description"
+          content="帮你把不舒服的话变成暖心的表达，温暖有效的非暴力沟通助手"
+        />
+        <meta name="theme-color" content="#ffffff" />
+        <meta
+          name="theme-color"
+          content="#ffffff"
+          media="(prefers-color-scheme: light)"
+        />
+        <meta
+          name="theme-color"
+          content="#1f2937"
+          media="(prefers-color-scheme: dark)"
+        />
         <meta name="color-scheme" content="light dark" />
-        
+
         {/* iOS Safari PWA Support */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <meta name="apple-mobile-web-app-title" content="倾听小猫" />
         <meta name="format-detection" content="telephone=no" />
-        
+
         {/* Android Chrome PWA Support */}
         <meta name="mobile-web-app-capable" content="yes" />
-        
+
         {/* Microsoft Tiles */}
         <meta name="msapplication-TileColor" content="#3b82f6" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
-        
+
         <Meta />
         <Links />
       </head>
@@ -89,7 +108,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
-        
+
         {/* Service Worker 注册 */}
         <script
           dangerouslySetInnerHTML={{

@@ -116,7 +116,7 @@ export default function ProcessingPage() {
   }, [fetcher.data]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-purple-950 flex items-center justify-center p-6 pb-safe">
       <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full text-center shadow-lg border border-white/20">
         {/* 小猫动画 */}
         <div className="mb-8">

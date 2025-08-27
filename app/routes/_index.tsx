@@ -33,7 +33,7 @@ export default function Index() {
 
   return (
     <UsageLimitGuard>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-purple-950 pb-safe">
         {/* 顶部标题区域 */}
         <div className="px-6 pt-12 pb-8 text-center">
           <div className="animate-fade-in">

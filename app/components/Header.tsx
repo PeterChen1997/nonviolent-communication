@@ -5,8 +5,10 @@ export default function Header() {
   const isHomePage = location.pathname === "/";
 
   return (
-    <header className="bg-white backdrop-blur-xl border-b border-gray-200/30 sticky top-0 z-40 shadow-sm">
-      <div className="max-w-4xl mx-auto px-6 py-4">
+    <header className="bg-white dark:bg-gray-950 backdrop-blur-xl border-b border-gray-200/30 dark:border-gray-700/30 sticky top-0 z-40 shadow-sm">
+      {/* iOS PWA 安全区域适配 */}
+      <div className="pt-safe"></div>
+      <div className="max-w-4xl mx-auto px-6 py-4 pl-safe pr-safe">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link
@@ -14,7 +16,9 @@ export default function Header() {
             className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
           >
             <div className="text-2xl">🐈</div>
-            <span className="text-lg font-bold text-gray-900">倾听小猫</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+              倾听小猫
+            </span>
           </Link>
 
           {/* Navigation */}

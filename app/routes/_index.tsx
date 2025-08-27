@@ -77,11 +77,11 @@ export default function Index() {
                   value={originalText}
                   onChange={(e) => setOriginalText(e.target.value)}
                   placeholder="例如：你总是玩手机不回我消息，真的很烦人！"
-                  className="w-full p-4 text-base md:text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-400 focus:outline-none resize-none h-32 md:h-36 text-gray-900 placeholder-gray-400 transition-all duration-300 focus:shadow-lg focus:scale-[1.02]"
+                  className="w-full p-4 text-base md:text-lg border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:border-blue-400 dark:focus:border-blue-500 focus:outline-none resize-none h-32 md:h-36 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 transition-all duration-300 focus:shadow-lg focus:scale-[1.02]"
                   rows={4}
                   required
                 />
-                <div className="absolute bottom-3 right-4 text-sm text-gray-400">
+                <div className="absolute bottom-3 right-4 text-sm text-gray-400 dark:text-gray-500">
                   {originalText.length}/500
                 </div>
               </div>

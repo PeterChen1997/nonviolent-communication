@@ -83,6 +83,24 @@ export default function ResultPage() {
 
   const aiAnalysis = session.ai_feedback;
 
+  // 生成长度适中的后备标准答案
+  const generateFallbackResponse = () => {
+    const originalLength = session.original_text?.length || 50;
+    const targetMaxLength = originalLength * 3;
+
+    let fallback = `${session.observation}，这让我感到${session.feeling}，因为我需要${session.need}。${session.request}`;
+
+    if (fallback.length > targetMaxLength) {
+      fallback = `${session.observation}，我感到${session.feeling}，需要${session.need}。${session.request}`;
+    }
+
+    if (fallback.length > targetMaxLength) {
+      fallback = `${session.observation}，我${session.feeling}，希望${session.request}`;
+    }
+
+    return fallback;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* 顶部标题 */}
@@ -142,6 +160,39 @@ export default function ResultPage() {
             ))}
           </div>
         </div>
+
+        {/* 标准答案 */}
+        {(aiAnalysis?.standard_response ||
+          (session.observation &&
+            session.feeling &&
+            session.need &&
+            session.request)) && (
+          <div
+            className="bg-gradient-to-r from-pink-50 via-purple-50 to-blue-50 backdrop-blur-xl rounded-3xl p-8 shadow-lg border-2 border-pink-200 animate-slide-up"
+            style={{ animationDelay: "1.2s" }}
+          >
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              ✨ <span className="ml-2">小猫推荐的标准答案</span>
+            </h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-pink-100">
+              <div className="text-lg text-gray-800 leading-relaxed font-medium">
+                <span className="text-pink-600 text-xl font-semibold">💬</span>
+                <span className="ml-3">
+                  "
+                  {formatText(
+                    aiAnalysis?.standard_response || generateFallbackResponse()
+                  )}
+                  "
+                </span>
+              </div>
+            </div>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600">
+                💝 这句话结合了观察、感受、需要、请求，可以直接使用哦~
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* AI 分析结果 */}
         {aiAnalysis && (
@@ -270,31 +321,6 @@ export default function ResultPage() {
               </div>
             </div>
           </>
-        )}
-
-        {/* 标准答案 */}
-        {aiAnalysis?.standard_response && (
-          <div
-            className="bg-gradient-to-r from-pink-50 via-purple-50 to-blue-50 backdrop-blur-xl rounded-3xl p-8 shadow-lg border-2 border-pink-200 animate-slide-up"
-            style={{ animationDelay: "1.2s" }}
-          >
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              ✨ <span className="ml-2">小猫推荐的标准答案</span>
-            </h3>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-pink-100">
-              <div className="text-lg text-gray-800 leading-relaxed font-medium">
-                <span className="text-pink-600 text-xl font-semibold">💬</span>
-                <span className="ml-3">
-                  "{formatText(aiAnalysis.standard_response)}"
-                </span>
-              </div>
-            </div>
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600">
-                💝 这句话结合了观察、感受、需要、请求，可以直接使用哦~
-              </p>
-            </div>
-          </div>
         )}
 
         {/* 操作按钮 */}

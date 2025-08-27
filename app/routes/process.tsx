@@ -52,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ProcessingPage() {
   const { originalText } = useLoaderData<typeof loader>();
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<{ sessionId: string }>();
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -83,12 +83,12 @@ export default function ProcessingPage() {
     const timer = setInterval(() => {
       setProgress((prev) => {
         if (prev < 90) {
-          const increment = Math.random() * 15 + 5; // 随机增加5-20%
+          const increment = Math.random() * 8 + 3; // 随机增加3-11%
           return Math.min(prev + increment, 90);
         }
         return prev;
       });
-    }, 800);
+    }, 1800);
 
     return () => clearInterval(timer);
   }, []);
@@ -102,7 +102,7 @@ export default function ProcessingPage() {
         }
         return prev;
       });
-    }, 2000);
+    }, 3500);
 
     return () => clearInterval(stepTimer);
   }, []);
@@ -149,7 +149,7 @@ export default function ProcessingPage() {
             {steps[currentStep]}
           </div>
 
-          <div className="text-gray-500 text-sm">预计需要 10-30 秒</div>
+          <div className="text-gray-500 text-sm">预计需要 30-50 秒</div>
         </div>
 
         {/* 状态显示 */}

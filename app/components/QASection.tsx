@@ -18,7 +18,7 @@ interface QASectionProps {
 export default function QASection({ sessionId, existingQAs }: QASectionProps) {
   const [question, setQuestion] = useState("");
   const [qaList, setQAList] = useState<QASession[]>(existingQAs);
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<{ success: boolean; qa: QASession }>();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ export default function QASection({ sessionId, existingQAs }: QASectionProps) {
   // 当fetcher返回新的问答时，更新列表
   useEffect(() => {
     if (fetcher.data?.qa) {
-      setQAList((prev) => [...prev, fetcher.data.qa]);
+      setQAList((prev) => [...prev, fetcher.data!.qa]);
       setQuestion("");
       // 滚动到底部
       setTimeout(() => {
@@ -120,17 +120,17 @@ export default function QASection({ sessionId, existingQAs }: QASectionProps) {
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="您还有什么想了解的关于这次的问题吗？"
-              className="w-full p-4 border-2 border-gray-200 rounded-2xl focus:border-blue-400 focus:outline-none resize-none h-24 text-gray-900 placeholder-gray-400 transition-all duration-300"
+              className="w-full p-4 border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:border-blue-400 dark:focus:border-blue-500 focus:outline-none resize-none h-24 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 transition-all duration-300"
               maxLength={200}
               disabled={fetcher.state !== "idle"}
             />
-            <div className="absolute bottom-2 right-3 text-xs text-gray-400">
+            <div className="absolute bottom-2 right-3 text-xs text-gray-400 dark:text-gray-500">
               {question.length}/200
             </div>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               剩余问题数: {remainingQuestions}
             </span>
 

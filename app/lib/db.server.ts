@@ -80,9 +80,62 @@ export async function initDatabase() {
     `);
 
     console.log("数据库初始化完成");
+
+    // 执行数据迁移
+    await migrateExistingData();
   } catch (error) {
     console.error("数据库初始化失败:", error);
     throw error;
+  }
+}
+
+// 数据迁移函数：为现有数据添加standard_response字段
+export async function migrateExistingData() {
+  try {
+    // 查找所有没有standard_response字段的记录
+    const result = await pool.query(`
+      SELECT id, ai_feedback, observation, feeling, need, request, original_text 
+      FROM nvc_sessions 
+      WHERE ai_feedback IS NOT NULL 
+      AND (ai_feedback->>'standard_response') IS NULL
+    `);
+
+    console.log(`发现 ${result.rows.length} 条需要迁移的记录`);
+
+    for (const row of result.rows) {
+      const aiFeedback = row.ai_feedback;
+      const originalLength = row.original_text?.length || 50; // 获取原话的实际长度
+
+      // 生成标准答案（基于现有的四个部分，控制长度）
+      let standardResponse = `${row.observation}，这让我感到${row.feeling}，因为我需要${row.need}。${row.request}`;
+
+      // 如果标准答案太长，进行简化
+      const targetMaxLength = originalLength * 3;
+      if (standardResponse.length > targetMaxLength) {
+        standardResponse = `${row.observation}，我感到${row.feeling}，需要${row.need}。${row.request}`;
+      }
+
+      // 如果还是太长，进一步简化
+      if (standardResponse.length > targetMaxLength) {
+        standardResponse = `${row.observation}，我${row.feeling}，希望${row.request}`;
+      }
+
+      // 更新记录
+      const updatedFeedback = {
+        ...aiFeedback,
+        standard_response: standardResponse,
+      };
+
+      await pool.query(
+        `UPDATE nvc_sessions SET ai_feedback = $1 WHERE id = $2`,
+        [JSON.stringify(updatedFeedback), row.id]
+      );
+    }
+
+    console.log(`成功迁移 ${result.rows.length} 条记录`);
+  } catch (error) {
+    console.error("数据迁移失败:", error);
+    // 不抛出错误，避免影响应用启动
   }
 }
 

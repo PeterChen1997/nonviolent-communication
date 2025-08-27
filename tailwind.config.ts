@@ -2,6 +2,7 @@ import type { Config } from "tailwindcss";
 
 export default {
   content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
+  darkMode: "media", // 启用基于系统偏好的黑暗模式
   theme: {
     extend: {
       fontFamily: {

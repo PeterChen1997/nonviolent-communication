@@ -65,16 +65,16 @@ export default function QASection({ sessionId, existingQAs }: QASectionProps) {
 
   return (
     <div
-      className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-slide-up"
+      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20 animate-slide-up"
       style={{ animationDelay: "2.0s" }}
     >
-      <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
+      <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
         🐱 <span className="ml-2">继续和小猫聊聊</span>
       </h3>
 
-      <p className="text-gray-600 text-sm md:text-base mb-6">
+      <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base mb-6">
         基于刚才的对话，小猫还可以回答你{" "}
-        <span className="font-semibold text-purple-600">
+        <span className="font-semibold text-purple-600 dark:text-purple-400">
           {remainingQuestions}
         </span>{" "}
         个问题呢

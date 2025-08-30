@@ -107,10 +107,10 @@ export default function ResultPage() {
       <div className="px-6 pt-12 pb-8 text-center">
         <div className="animate-fade-in">
           <div className="text-6xl mb-4">🐱</div>
-          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 tracking-tight">
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
             小猫为你准备好了
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 max-w-md mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-md mx-auto leading-relaxed">
             一份温暖的表达方式 💕
           </p>
         </div>
@@ -118,8 +118,8 @@ export default function ResultPage() {
 
       <div className="px-6 max-w-2xl mx-auto space-y-6">
         {/* 原始表达 */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-slide-up">
-          <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20 animate-slide-up">
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
             💬 <span className="ml-2">你刚才说的话</span>
           </h2>
           <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-4 md:p-5 border-l-4 border-blue-400">
@@ -131,10 +131,10 @@ export default function ResultPage() {
 
         {/* NVC 转换结果 */}
         <div
-          className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-slide-up"
+          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20 animate-slide-up"
           style={{ animationDelay: "0.1s" }}
         >
-          <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-6 flex items-center">
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
             🌸 <span className="ml-2">小猫建议这样说</span>
           </h2>
           <div className="space-y-6">
@@ -171,10 +171,10 @@ export default function ResultPage() {
             className="bg-gradient-to-r from-pink-50 via-purple-50 to-blue-50 backdrop-blur-xl rounded-3xl p-8 shadow-lg border-2 border-pink-200 animate-slide-up"
             style={{ animationDelay: "1.2s" }}
           >
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
               ✨ <span className="ml-2">小猫推荐的标准答案</span>
             </h3>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-pink-100">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-pink-100 dark:border-pink-800">
               <div className="text-lg text-gray-800 leading-relaxed font-medium">
                 <span className="text-pink-600 text-xl font-semibold">💬</span>
                 <span className="ml-3">
@@ -187,7 +187,7 @@ export default function ResultPage() {
               </div>
             </div>
             <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 💝 这句话结合了观察、感受、需要、请求，可以直接使用哦~
               </p>
             </div>
@@ -199,10 +199,10 @@ export default function ResultPage() {
           <>
             {/* 总体评分 */}
             <div
-              className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-lg border border-white/20 animate-slide-up"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-lg border border-white/20 dark:border-gray-700/20 animate-slide-up"
               style={{ animationDelay: "0.6s" }}
             >
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 🌟 <span className="ml-2">小猫给你打分</span>
               </h3>
               <div className="text-center mb-6">
@@ -269,10 +269,10 @@ export default function ResultPage() {
 
             {/* 改进建议 */}
             <div
-              className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-lg border border-white/20 animate-slide-up"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-lg border border-white/20 dark:border-gray-700/20 animate-slide-up"
               style={{ animationDelay: "0.8s" }}
             >
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 💡 <span className="ml-2">小猫的贴心建议</span>
               </h3>
               <div className="space-y-6">
@@ -374,10 +374,10 @@ export default function ResultPage() {
 
         {/* 时间信息 */}
         <div
-          className="text-center bg-white/50 backdrop-blur-xl rounded-2xl p-4 animate-fade-in"
+          className="text-center bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-2xl p-4 animate-fade-in"
           style={{ animationDelay: "2.0s" }}
         >
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 text-lg">
             完成时间: {new Date(session.created_at!).toLocaleString("zh-CN")}
           </p>
         </div>

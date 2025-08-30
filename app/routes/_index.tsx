@@ -39,11 +39,11 @@ export default function Index() {
           <div className="animate-fade-in">
             <div className="mb-4">
               <div className="text-6xl mb-4">🐱</div>
-              <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-3 tracking-tight">
+              <h1 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
                 倾听小猫
               </h1>
             </div>
-            <p className="text-lg md:text-xl text-gray-600 max-w-md mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-md mx-auto leading-relaxed">
               我是你的温暖沟通助手
               <br />
               帮你把不舒服的话变成暖心的表达 💕
@@ -60,12 +60,12 @@ export default function Index() {
             onSubmit={handleSubmit}
           >
             {/* 输入卡片 */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-slide-up">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20 animate-slide-up">
               <div className="mb-6">
-                <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">
+                <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-2">
                   跟小猫说说心里话吧 🐾
                 </h2>
-                <p className="text-gray-600 text-base md:text-lg">
+                <p className="text-gray-600 dark:text-gray-300 text-base md:text-lg">
                   不用担心说得不好听，我会帮你变得温暖哦~
                 </p>
               </div>
@@ -89,10 +89,10 @@ export default function Index() {
 
             {/* 示例卡片 */}
             <div
-              className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-slide-up"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20 animate-slide-up"
               style={{ animationDelay: "0.1s" }}
             >
-              <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 💡 试试这些例子吧
               </h3>
               <div className="grid gap-3">
@@ -101,7 +101,7 @@ export default function Index() {
                     key={index}
                     type="button"
                     onClick={() => setOriginalText(example)}
-                    className="text-left p-3 md:p-4 bg-gray-50/50 hover:bg-blue-50 rounded-xl transition-all duration-300 text-gray-700 hover:text-blue-700 transform hover:scale-[1.02] hover:shadow-md"
+                    className="text-left p-3 md:p-4 bg-gray-50/50 dark:bg-gray-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300 transform hover:scale-[1.02] hover:shadow-md"
                   >
                     <span className="text-sm md:text-base">{example}</span>
                   </button>
@@ -111,10 +111,10 @@ export default function Index() {
 
             {/* NVC 步骤预览卡片 */}
             <div
-              className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 animate-slide-up"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 dark:border-gray-700/20 animate-slide-up"
               style={{ animationDelay: "0.2s" }}
             >
-              <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-6">
+              <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-6">
                 🐱 小猫的暖心四步法
               </h3>
               <div className="space-y-4">
@@ -155,10 +155,10 @@ export default function Index() {
                       {step.num}
                     </div>
                     <div>
-                      <div className="text-base md:text-lg font-semibold text-gray-900">
+                      <div className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
                         {step.title}
                       </div>
-                      <div className="text-sm md:text-base text-gray-600">
+                      <div className="text-sm md:text-base text-gray-600 dark:text-gray-300">
                         {step.desc}
                       </div>
                     </div>

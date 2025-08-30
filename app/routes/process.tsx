@@ -117,19 +117,19 @@ export default function ProcessingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-purple-950 flex items-center justify-center p-6 pb-safe">
-      <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full text-center shadow-lg border border-white/20">
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full text-center shadow-lg border border-white/20 dark:border-gray-700/20">
         {/* 小猫动画 */}
         <div className="mb-8">
           <div className="text-8xl mb-4 animate-bounce">🐈</div>
         </div>
 
         {/* 标题 */}
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
           小猫正在思考中
         </h2>
 
         {/* 描述 */}
-        <p className="text-base md:text-lg text-gray-600 mb-6 leading-relaxed">
+        <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
           我正在用心分析你的话， 马上就能给你一个温暖的表达方式啦~
         </p>
 
@@ -145,16 +145,18 @@ export default function ProcessingPage() {
           </div>
 
           {/* 当前步骤显示 */}
-          <div className="text-purple-600 text-base md:text-lg font-medium mb-4">
+          <div className="text-purple-600 dark:text-purple-400 text-base md:text-lg font-medium mb-4">
             {steps[currentStep]}
           </div>
 
-          <div className="text-gray-500 text-sm">预计需要 30-50 秒</div>
+          <div className="text-gray-500 dark:text-gray-400 text-sm">
+            预计需要 30-50 秒
+          </div>
         </div>
 
         {/* 状态显示 */}
         {fetcher.state === "idle" && fetcher.data?.sessionId && (
-          <div className="text-green-600 text-base font-medium">
+          <div className="text-green-600 dark:text-green-400 text-base font-medium">
             🎉 完成啦！正在跳转...
           </div>
         )}
